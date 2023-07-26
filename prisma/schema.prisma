@@ -6,6 +6,81 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  fullName String
+  email String
+  password String
+  role Role @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdConcepts Concept[] @relation("createdConcepts")
+  purchasedConcepts Concept[] @relation("purchasedConcepts")
+}
+
+
+model Concept{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  image String
+  description String
+  style Style
+  roomType Room
+  userId String @db.ObjectId
+  createdBy User @relation("createdConcepts",fields: [userId],references: [id])
+  purchasedBy User @relation("purchasedConcepts",fields: [userId],references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productIds String[] @db.ObjectId
+  products Product[] @relation(fields: [productIds],references: [id])
+}
+
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  image String
+  description String
+  category String
+  price Int
+  url String
+  conceptIds String[] @db.ObjectId
+  concepts Concept[] @relation(fields: [conceptIds],references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Style{
+  MINIMALIST
+  MODERN
+  INDUSTRIAL
+  SCANDINAVIAN
+  CONTEMPORARY
+  MIDCENTURY
+  ARTDECO
+  TRADITIONAL
+  BOHEMIAN
+  ELECTIC
+}
+
+enum Room{
+ KITCHEN
+  LIVINGROOM
+  BEDROOM
+  DININGROOM
+  BATHROOM
+  OFFICE
+  STUDY
+  ENTRYWAY
+  LIBRARY
+  NURSERY
+}
+
