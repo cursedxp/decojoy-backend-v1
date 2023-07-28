@@ -22,7 +22,10 @@ export class AuthService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          return { message: 'This user already exists in our db' };
+          return {
+            message:
+              'Email address must be unique and not used on other accounts',
+          };
         }
       }
     }
