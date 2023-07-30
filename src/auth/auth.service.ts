@@ -1,16 +1,21 @@
 import {
   NotFoundException,
   ForbiddenException,
+  UnauthorizedException,
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { ifError } from 'assert';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private jwtService: JwtService,
+  ) {}
   async signUp(dto) {
     try {
       const hashedPassword = await argon2.hash(dto.password);
@@ -42,15 +47,27 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('This email address is not registered');
+        throw new UnauthorizedException('This email address is not registered');
       }
       const password = await argon2.verify(user.password, dto.password);
       if (!password) {
-        throw new NotFoundException('Passwords do not match. Please try again');
+        throw new UnauthorizedException(
+          'Passwords do not match. Please try again',
+        );
       }
+      return this.createToken(user.id, user.email);
     } catch (error) {
       //console.log(error.message);
       throw error;
     }
+  }
+  async createToken(userId: string, email: string) {
+    const payload = {
+      sub: userId,
+      email: email,
+    };
+    const token = await this.jwtService.signAsync(payload);
+
+    return { access_token: token };
   }
 }
