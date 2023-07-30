@@ -38,7 +38,7 @@ export class AuthService {
       }
     }
   }
-  async signIn(dto) {
+  async signIn(dto): Promise<object> {
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
@@ -55,13 +55,14 @@ export class AuthService {
           'Passwords do not match. Please try again',
         );
       }
+      console.log(typeof this.createToken(user.id, user.email));
       return this.createToken(user.id, user.email);
     } catch (error) {
       //console.log(error.message);
       throw error;
     }
   }
-  async createToken(userId: string, email: string) {
+  async createToken(userId: string, email: string): Promise<object> {
     const payload = {
       sub: userId,
       email: email,
