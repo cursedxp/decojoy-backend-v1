@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { ifError } from 'assert';
@@ -17,20 +21,36 @@ export class AuthService {
           password: hashedPassword,
         },
       });
-      console.log('User has been created');
-      return user;
+      console.log('👤 User has been created');
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          return {
-            message:
-              'Email address must be unique and not used on other accounts',
-          };
+          throw new ForbiddenException(
+            'Email address must be unique and not used on other accounts',
+          );
         }
+        throw new ForbiddenException();
       }
     }
   }
-  signIn() {
-    return { message: 'User signed in' };
+  async signIn(dto) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('This email address is not registered');
+      }
+      const password = await argon2.verify(user.password, dto.password);
+      if (!password) {
+        throw new NotFoundException('Passwords do not match. Please try again');
+      }
+    } catch (error) {
+      //console.log(error.message);
+      throw error;
+    }
   }
 }
