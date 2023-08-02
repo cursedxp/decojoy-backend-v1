@@ -9,6 +9,7 @@ import * as argon2 from 'argon2';
 import { ifError } from 'assert';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -55,17 +56,22 @@ export class AuthService {
           'Passwords do not match. Please try again',
         );
       }
-      console.log(typeof this.createToken(user.id, user.email));
-      return this.createToken(user.id, user.email);
+      console.log(typeof this.createToken(user.id, user.email, user.role));
+      return this.createToken(user.id, user.email, user.role);
     } catch (error) {
       //console.log(error.message);
       throw error;
     }
   }
-  async createToken(userId: string, email: string): Promise<object> {
+  async createToken(
+    userId: string,
+    email: string,
+    role: Role,
+  ): Promise<object> {
     const payload = {
       sub: userId,
       email: email,
+      role: role,
     };
     const token = await this.jwtService.signAsync(payload);
 
