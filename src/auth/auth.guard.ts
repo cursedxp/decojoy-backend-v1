@@ -6,13 +6,17 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private config: ConfigService) {}
+  constructor(
+    private jwtService: JwtService,
+    private config: ConfigService,
+    private reflector: Reflector, // Inject Reflector
+  ) {}
 
-  //canActivate method is the core logic of the guard and is executed when the route protected by this guard is accessed
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
@@ -23,9 +27,13 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.config.get('SECRET_KEY'),
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
+      request['user'] = payload; // payload now includes role
+
+      const roles = this.reflector.get<string[]>('roles', context.getHandler());
+      if (roles && !roles.includes(payload.role)) {
+        // if roles are specified and the user role is not included, deny access
+        throw new UnauthorizedException();
+      }
     } catch {
       throw new UnauthorizedException();
     }
