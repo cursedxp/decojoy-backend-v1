@@ -4,7 +4,6 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
-import { CloudStorage } from './cloud-storage/cloud-storage';
 
 @Module({
   imports: [
@@ -14,6 +13,5 @@ import { CloudStorage } from './cloud-storage/cloud-storage';
     UserModule,
     AdminModule,
   ],
-  providers: [CloudStorage],
 })
 export class AppModule {}
