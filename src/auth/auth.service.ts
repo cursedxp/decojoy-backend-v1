@@ -1,12 +1,10 @@
 import {
-  NotFoundException,
   ForbiddenException,
   UnauthorizedException,
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
-import { ifError } from 'assert';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
