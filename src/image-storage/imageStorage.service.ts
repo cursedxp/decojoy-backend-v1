@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ImageStorageService {
@@ -30,11 +35,10 @@ export class ImageStorageService {
     file: Express.Multer.File,
     bucketName: string,
   ): Promise<string> {
-    const uniquePrefix = Date.now().toString();
-    const sanitizedFilename = `${uniquePrefix}_${file.originalname.replace(
-      / /g,
-      '_',
-    )}`;
+    const uniqueID = uuidv4(); // Generate a UUID
+    const extension = file.originalname.split('.').pop(); // Extract file extension from the original name
+    const sanitizedFilename = `${uniqueID}.${extension}`; // Construct a new unique file name
+
     const blob = this.storage.bucket(bucketName).file(sanitizedFilename);
 
     const blobStream = blob.createWriteStream({
@@ -62,8 +66,12 @@ export class ImageStorageService {
     // First, upload the image
     const publicUrl = await this.uploadImage(file, bucketName);
 
-    // Now, create metadata for this image
-    await this.createImageMetadata(file.filename, publicUrl);
+    const uniqueID = uuidv4();
+    const extension = file.originalname.split('.').pop();
+    const sanitizedFilename = `${uniqueID}.${extension}`;
+
+    // Now, create metadata for this image using the sanitized filename
+    await this.createImageMetadata(sanitizedFilename, publicUrl);
 
     return publicUrl;
   }
@@ -74,7 +82,7 @@ export class ImageStorageService {
 
     const [exists] = await file.exists();
     if (!exists) {
-      throw new Error(
+      throw new NotFoundException(
         `Image "${filename}" not found in bucket "${bucketName}".`,
       );
     }
@@ -82,7 +90,9 @@ export class ImageStorageService {
     try {
       await file.delete();
     } catch (err) {
-      throw new Error(`Failed to delete image "${filename}": ${err.message}`);
+      throw new InternalServerErrorException(
+        `Failed to delete image "${filename}": ${err.message}`,
+      );
     }
   }
 }
