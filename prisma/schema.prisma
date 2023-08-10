@@ -27,7 +27,7 @@ model Concept{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   thumbnail String
-  images  String[]
+  images String[]
   description String
   style Style
   roomType Room
@@ -38,6 +38,14 @@ model Concept{
   updatedAt DateTime @updatedAt
   productIds String[] @db.ObjectId
   products Product[] @relation(fields: [productIds],references: [id])
+}
+
+model Image{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  fileName String
+  url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
