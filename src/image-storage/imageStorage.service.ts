@@ -7,8 +7,6 @@ import { Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
-import { VisionService } from 'src/vision-service/vision-service';
-
 @Injectable()
 export class ImageStorageService {
   private storage: Storage;
@@ -16,7 +14,6 @@ export class ImageStorageService {
   constructor(
     private config: ConfigService,
     private prismaService: PrismaService,
-    private vision: VisionService,
   ) {
     this.storage = new Storage({
       keyFilename: config.get('GOOGLE_APPLICATION_CREDENTIALS'),
@@ -56,7 +53,6 @@ export class ImageStorageService {
       blobStream.on('finish', () => {
         const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
         resolve(publicUrl);
-        this.vision.detectObjects(publicUrl);
       });
       blobStream.end(file.buffer);
     });
@@ -69,12 +65,8 @@ export class ImageStorageService {
     // First, upload the image
     const publicUrl = await this.uploadImage(file, bucketName);
 
-    const uniqueID = uuidv4();
-    const extension = file.originalname.split('.').pop();
-    const sanitizedFilename = `${uniqueID}.${extension}`;
-
     // Now, create metadata for this image using the sanitized filename
-    await this.createImageMetadata(sanitizedFilename, publicUrl);
+    await this.createImageMetadata(file.originalname, publicUrl);
 
     return publicUrl;
   }

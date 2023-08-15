@@ -11,12 +11,14 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { VisionService } from 'src/vision-service/vision-service';
 
 @Controller('images')
 export class ImageStorageController {
   constructor(
     private imageService: ImageStorageService,
     private config: ConfigService,
+    private vision: VisionService,
   ) {}
 
   @Post('upload')
@@ -25,24 +27,25 @@ export class ImageStorageController {
   @UseInterceptors(FilesInterceptor('images'))
   async uploadImage(@UploadedFiles() images: Express.Multer.File[]) {
     const imageUrls = []; // Array to store public URLs
-    console.log(images);
+
     try {
       for (const image of images) {
-        // Use a combined method to upload the image and save metadata
         const url = await this.imageService.uploadAndCreateMetadata(
           image,
           this.config.get('BUCKET_NAME'),
         );
         imageUrls.push(url);
       }
+
+      const visionResults = await this.vision.detectObjects({ imageUrls });
+
+      return {
+        imageUrls: imageUrls,
+        visionResults: visionResults,
+      };
     } catch (error) {
-      // Handle any unexpected errors here. NestJS will also catch these automatically if not handled here.
+      console.error('Error occurred:', error.message);
       throw new InternalServerErrorException(error.message);
     }
-
-    return {
-      status: 'success',
-      imageUrls: imageUrls,
-    };
   }
 }
