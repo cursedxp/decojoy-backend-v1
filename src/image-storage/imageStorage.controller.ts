@@ -38,10 +38,16 @@ export class ImageStorageController {
       }
 
       const visionResults = await this.vision.detectObjects({ imageUrls });
-
-      return {
+      this.vision.saveResults({
         imageUrls: imageUrls,
         visionResults: visionResults,
+      });
+      return {
+        status: 'success',
+        data: {
+          imageUrls: imageUrls,
+          analysis: visionResults,
+        },
       };
     } catch (error) {
       console.error('Error occurred:', error.message);
