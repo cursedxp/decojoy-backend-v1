@@ -44,8 +44,36 @@ model Image{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   fileName String
   url String
+  analysis ImageAnalysis?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ImageAnalysis{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  imageId String @unique @db.ObjectId 
+  image Image @relation(fields: [imageId], references: [id])
+  createdAt DateTime @default(now())
+  detectedObjects DetectedObject[]
+  updatedAt DateTime @updatedAt
+}
+
+model DetectedObject {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  label String
+  confidence Float
+  imageAnalysisId String @db.ObjectId
+  imageAnalysis ImageAnalysis @relation(fields: [imageAnalysisId], references: [id])
+  vertices Vertex[]  // if you want to store bounding box information
+  associatedProducts Product[]  // relationships to products associated with this detected object
+}
+
+model Vertex {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  x Float
+  y Float
+  detectedObjectId String @db.ObjectId
+  object DetectedObject @relation(fields: [detectedObjectId], references: [id])
 }
 
 model Product {
@@ -62,7 +90,8 @@ model Product {
   updatedAt DateTime @updatedAt
   partnerIds String[] @db.ObjectId
   partners  Partner[] @relation(fields: [partnerIds],references: [id])
-
+  objectId String @db.ObjectId
+  detectedObjects DetectedObject @relation(fields: [objectId],references: [id]) 
 }
 
 model Partner {
