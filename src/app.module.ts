@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { ImageStorageModule } from './image-storage/imageStorage.module';
 import { VisionService } from './vision-service/vision-service';
+import { ImageOperationsService } from './image-operations/image-operations.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { VisionService } from './vision-service/vision-service';
     AdminModule,
     ImageStorageModule,
   ],
-  providers: [VisionService],
+  providers: [VisionService, ImageOperationsService],
 })
 export class AppModule {}
