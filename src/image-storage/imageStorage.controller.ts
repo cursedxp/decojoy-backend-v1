@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@Controller('images')
+@Controller('assets')
 export class ImageStorageController {
   constructor(
     private imageService: ImageStorageService,
