@@ -4,9 +4,6 @@ import * as sharp from 'sharp';
 @Injectable()
 export class ImageOperationsService {
   async cropImage(imageBuffer: Buffer, vertices: Vertex[]): Promise<Buffer> {
-    console.log('cropImage function has started');
-    console.log('Received vertices in cropImage:', JSON.stringify(vertices));
-
     // Basic check to see if imageBuffer is present and has data
     if (!imageBuffer || !imageBuffer.length) {
       throw new BadRequestException('Image buffer is empty or not provided');
@@ -28,10 +25,6 @@ export class ImageOperationsService {
     // Get the metadata of the image to determine its dimensions
     const metadata = await sharp(imageBuffer).metadata();
 
-    console.log('Image metadata:', metadata);
-
-    //... (unchanged code)
-
     const topLeft = vertices[0];
     const topRight = vertices[1];
     const bottomRight = vertices[2];
@@ -50,27 +43,11 @@ export class ImageOperationsService {
     const width = topRight.x - topLeft.x;
     const height = bottomLeft.y - topLeft.y;
 
-    console.log('Calculated Width:', width);
-    console.log('Calculated Height:', height);
-
     let left = topLeft.x;
     let top = topLeft.y;
 
     let calculatedWidth = width;
     let calculatedHeight = height;
-
-    //... (rest of the code remains unchanged)
-
-    console.log(
-      'Before adjustments - Left:',
-      left,
-      'Top:',
-      top,
-      'Calculated Width:',
-      calculatedWidth,
-      'Calculated Height:',
-      calculatedHeight,
-    );
 
     // Validate and adjust if needed
     if (left < 0) left = 0;
@@ -87,17 +64,6 @@ export class ImageOperationsService {
         `Invalid derived dimensions. Width: ${calculatedWidth}, Height: ${calculatedHeight}. Ensure vertices are correctly positioned within the image bounds.`,
       );
     }
-
-    console.log(
-      'After adjustments - Left:',
-      left,
-      'Top:',
-      top,
-      'Calculated Width:',
-      calculatedWidth,
-      'Calculated Height:',
-      calculatedHeight,
-    );
 
     const croppedImageBuffer = await sharp(imageBuffer)
       .extract({
