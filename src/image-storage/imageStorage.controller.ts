@@ -11,19 +11,12 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { VisionService } from 'src/vision-service/vision-service';
-import { ImageOperationsService } from 'src/image-operations/image-operations.service';
-import { Vertex } from 'src/image-operations/image-operations.service';
-
-// ... [rest of the imports]
 
 @Controller('images')
 export class ImageStorageController {
   constructor(
     private imageService: ImageStorageService,
     private config: ConfigService,
-    private vision: VisionService,
-    private imageOps: ImageOperationsService,
   ) {}
 
   @Post('upload')
@@ -32,7 +25,8 @@ export class ImageStorageController {
   @UseInterceptors(FilesInterceptor('images'))
   async uploadImage(@UploadedFiles() images: Express.Multer.File[]) {
     const imageUrls = [];
-    const croppedImageUrls = [];
+    // const croppedImageUrls = [];
+    // const similarProductUrls = [];
 
     try {
       for (const image of images) {
@@ -43,63 +37,75 @@ export class ImageStorageController {
         imageUrls.push(url);
       }
 
-      const visionResults = await this.vision.detectObjects({ imageUrls });
-      for (let i = 0; i < visionResults.length; i++) {
-        const analysis = visionResults[i];
-        const filenameFromUrl = new URL(imageUrls[i]).pathname.split('/').pop(); // This extracts the original file name
-        const imageBuffer = await this.imageService.getImageBuffer(
-          filenameFromUrl,
-          this.config.get('BUCKET_NAME'),
-        );
+      // const visionResults = await this.vision.detectObjects({ imageUrls });
 
-        // To store the cropped URLs for this image.
-        const thisImageCroppedUrls = [];
+      // for (let i = 0; i < visionResults.length; i++) {
+      //   const analysis = visionResults[i];
+      //   const filenameFromUrl = new URL(imageUrls[i]).pathname.split('/').pop();
+      //   const imageBuffer = await this.imageService.getImageBuffer(
+      //     filenameFromUrl,
+      //     this.config.get('BUCKET_NAME'),
+      //   );
 
-        analysis.forEach(async (detectedObject) => {
-          if (
-            detectedObject.boundingPoly &&
-            detectedObject.boundingPoly.normalizedVertices
-          ) {
-            const imageDimensions = await this.imageOps.getImageDimensions(
-              imageBuffer,
-            );
-            const pixelVertices: Vertex[] =
-              detectedObject.boundingPoly.normalizedVertices.map((v) => ({
-                x: v.x * imageDimensions.width,
-                y: v.y * imageDimensions.height,
-              }));
+      //   const thisImageCroppedUrls = [];
 
-            const croppedImageBuffer = await this.imageOps.cropImage(
-              imageBuffer,
-              pixelVertices,
-            );
-            const croppedUrl = await this.imageService.uploadCroppedImage(
-              croppedImageBuffer,
-              filenameFromUrl, // pass the original filename here
-              this.config.get('BUCKET_NAME'),
-            );
+      //   for (const detectedObject of analysis) {
+      //     if (
+      //       detectedObject.boundingPoly &&
+      //       detectedObject.boundingPoly.normalizedVertices
+      //     ) {
+      //       const imageDimensions = await this.imageOps.getImageDimensions(
+      //         imageBuffer,
+      //       );
+      //       const pixelVertices: Vertex[] =
+      //         detectedObject.boundingPoly.normalizedVertices.map((v) => ({
+      //           x: v.x * imageDimensions.width,
+      //           y: v.y * imageDimensions.height,
+      //         }));
 
-            thisImageCroppedUrls.push(croppedUrl);
-          }
-        });
+      //       const croppedImageBuffer = await this.imageOps.cropImage(
+      //         imageBuffer,
+      //         pixelVertices,
+      //       );
+      //       const croppedUrl = await this.imageService.uploadCroppedImage(
+      //         croppedImageBuffer,
+      //         filenameFromUrl,
+      //         this.config.get('BUCKET_NAME'),
+      //       );
 
-        // If multiple cropped images were produced from one image, we store all their URLs.
-        if (thisImageCroppedUrls.length) {
-          croppedImageUrls.push(thisImageCroppedUrls);
-        }
-      }
+      //       thisImageCroppedUrls.push(croppedUrl);
+      //     }
+      //   }
 
-      this.vision.saveResults({
-        imageUrls: imageUrls,
-        visionResults: visionResults,
-      });
+      //   // Now, for each cropped image of this particular image, get similar products
+      //   const similarProductsForThisImage = [];
+      //   for (const croppedUrl of thisImageCroppedUrls) {
+      //     const similarProducts = await this.vision.findSimilarProducts(
+      //       croppedUrl,
+      //     );
+      //     similarProductsForThisImage.push(
+      //       similarProducts.map((product) => product.url),
+      //     );
+      //   }
+      //   similarProductUrls.push(similarProductsForThisImage);
+
+      //   if (thisImageCroppedUrls.length) {
+      //     croppedImageUrls.push(thisImageCroppedUrls);
+      //   }
+      // }
+
+      // await this.vision.saveResults({
+      //   imageUrls: imageUrls,
+      //   visionResults: visionResults,
+      // });
 
       return {
         status: 'success',
         data: {
           imageUrls: imageUrls,
-          croppedImageUrls: croppedImageUrls, // This will be an array of arrays now.
-          analysis: visionResults,
+          // croppedImageUrls: croppedImageUrls,
+          // similarProductUrls: similarProductUrls,
+          // analysis: visionResults,
         },
       };
     } catch (error) {
