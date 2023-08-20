@@ -1,8 +1,15 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import * as sharp from 'sharp';
 
 @Injectable()
 export class ImageOperationsService {
+  private storage: Storage;
   async cropImage(imageBuffer: Buffer, vertices: Vertex[]): Promise<Buffer> {
     // Basic check to see if imageBuffer is present and has data
     if (!imageBuffer || !imageBuffer.length) {
@@ -105,6 +112,55 @@ export class ImageOperationsService {
       width: metadata.width!,
       height: metadata.height!,
     };
+  }
+
+  async getImageBuffer(filename: string, bucketName: string): Promise<Buffer> {
+    const bucket = this.storage.bucket(bucketName);
+    const file = bucket.file(filename);
+
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new NotFoundException(
+        `Image "${filename}" not found in bucket "${bucketName}".`,
+      );
+    }
+
+    try {
+      const [buffer] = await file.download();
+      return buffer;
+    } catch (err) {
+      throw new InternalServerErrorException(
+        `Failed to fetch image "${filename}": ${err.message}`,
+      );
+    }
+  }
+
+  async uploadCroppedImage(
+    buffer: Buffer,
+    extension = 'png',
+    bucketName: string,
+  ): Promise<string> {
+    const uniqueID = uuidv4(); // Generate a UUID
+    const sanitizedFilename = `${uniqueID}.${extension}`; // Construct a new unique file name
+
+    // Add the 'cropped/' prefix to the sanitized filename to save inside the cropped folder
+    const filePath = `cropped/${sanitizedFilename}`;
+
+    const blob = this.storage.bucket(bucketName).file(filePath);
+    const blobStream = blob.createWriteStream({
+      resumable: false,
+    });
+
+    return new Promise((resolve, reject) => {
+      blobStream.on('error', (err) => {
+        reject(new Error(`Unable to upload cropped image: ${err.message}`));
+      });
+      blobStream.on('finish', () => {
+        const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        resolve(publicUrl);
+      });
+      blobStream.end(buffer);
+    });
   }
 }
 
