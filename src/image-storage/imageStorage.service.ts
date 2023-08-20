@@ -71,55 +71,6 @@ export class ImageStorageService {
     return publicUrl;
   }
 
-  async getImageBuffer(filename: string, bucketName: string): Promise<Buffer> {
-    const bucket = this.storage.bucket(bucketName);
-    const file = bucket.file(filename);
-
-    const [exists] = await file.exists();
-    if (!exists) {
-      throw new NotFoundException(
-        `Image "${filename}" not found in bucket "${bucketName}".`,
-      );
-    }
-
-    try {
-      const [buffer] = await file.download();
-      return buffer;
-    } catch (err) {
-      throw new InternalServerErrorException(
-        `Failed to fetch image "${filename}": ${err.message}`,
-      );
-    }
-  }
-
-  async uploadCroppedImage(
-    buffer: Buffer,
-    extension = 'png',
-    bucketName: string,
-  ): Promise<string> {
-    const uniqueID = uuidv4(); // Generate a UUID
-    const sanitizedFilename = `${uniqueID}.${extension}`; // Construct a new unique file name
-
-    // Add the 'cropped/' prefix to the sanitized filename to save inside the cropped folder
-    const filePath = `cropped/${sanitizedFilename}`;
-
-    const blob = this.storage.bucket(bucketName).file(filePath);
-    const blobStream = blob.createWriteStream({
-      resumable: false,
-    });
-
-    return new Promise((resolve, reject) => {
-      blobStream.on('error', (err) => {
-        reject(new Error(`Unable to upload cropped image: ${err.message}`));
-      });
-      blobStream.on('finish', () => {
-        const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
-        resolve(publicUrl);
-      });
-      blobStream.end(buffer);
-    });
-  }
-
   async deleteImage(filename: string, bucketName: string): Promise<void> {
     const bucket = this.storage.bucket(bucketName);
     const file = bucket.file(filename);
