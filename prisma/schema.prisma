@@ -30,10 +30,12 @@ model Concept{
   images String[]
   description String
   style Style
+  price Int?
   roomType Room
   userId String @db.ObjectId
   createdBy User @relation("createdConcepts",fields: [userId],references: [id])
   purchasedBy User @relation("purchasedConcepts",fields: [userId],references: [id])
+  status Status @default(DRAFT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   productIds String[] @db.ObjectId
@@ -82,7 +84,7 @@ model Product {
   image String
   description String
   category String
-  price Int
+  price Int?
   url String
   conceptIds String[] @db.ObjectId
   concepts Concept[] @relation(fields: [conceptIds],references: [id])
@@ -107,6 +109,7 @@ model Partner {
 enum Role {
   ADMIN
   USER
+  PARTNER
 }
 
 enum Style{
@@ -120,6 +123,10 @@ enum Style{
   TRADITIONAL
   BOHEMIAN
   ELECTIC
+}
+enum Status{
+  DRAFT
+  PUBLISHED
 }
 
 enum Room{
