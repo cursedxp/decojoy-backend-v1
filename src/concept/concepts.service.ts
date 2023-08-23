@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateConceptDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -7,36 +13,66 @@ export class ConceptsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createConcept(data: CreateConceptDto, payload) {
-    return this.prisma.concept.create({
-      data: {
-        ...data,
-        createdBy: { connect: { id: payload.sub } },
-      },
-    });
+    try {
+      return this.prisma.concept.create({
+        data: {
+          ...data,
+          createdBy: { connect: { id: payload.sub } },
+        },
+      });
+    } catch (error) {
+      this.handlePrismaError(error);
+    }
   }
+
   async deleteConcept(conceptId: string) {
-    const concept = await this.prisma.concept.findUnique({
-      where: { id: conceptId },
-    });
+    try {
+      const concept = await this.prisma.concept.findUnique({
+        where: { id: conceptId },
+      });
 
-    if (!concept) {
-      throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+      if (!concept) {
+        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+      }
+
+      return this.prisma.concept.delete({ where: { id: conceptId } });
+    } catch (error) {
+      this.handlePrismaError(error);
     }
-
-    return this.prisma.concept.delete({ where: { id: conceptId } });
   }
+
   async updateConcept(conceptId: string, updateData: CreateConceptDto) {
-    const concept = await this.prisma.concept.findUnique({
-      where: { id: conceptId },
-    });
+    try {
+      const concept = await this.prisma.concept.findUnique({
+        where: { id: conceptId },
+      });
 
-    if (!concept) {
-      throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+      if (!concept) {
+        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+      }
+
+      return this.prisma.concept.update({
+        where: { id: conceptId },
+        data: updateData,
+      });
+    } catch (error) {
+      this.handlePrismaError(error);
     }
+  }
 
-    return this.prisma.concept.update({
-      where: { id: conceptId },
-      data: updateData,
-    });
+  private handlePrismaError(error: any) {
+    switch (error.code) {
+      case 'P2002':
+        throw new ConflictException('Unique constraint violation.');
+      case 'P2016':
+        throw new NotFoundException('Record not found.');
+      case 'P2003':
+        throw new BadRequestException('Foreign key constraint failed.');
+      case 'P2001':
+      default:
+        throw new InternalServerErrorException(
+          'An internal server error occurred.',
+        );
+    }
   }
 }
