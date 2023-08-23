@@ -10,11 +10,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ConceptsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async createConcept(data: CreateConceptDto, payload) {
     try {
-      return this.prisma.concept.create({
+      return this.prismaService.concept.create({
         data: {
           ...data,
           createdBy: { connect: { id: payload.sub } },
@@ -27,7 +27,7 @@ export class ConceptsService {
 
   async deleteConcept(conceptId: string) {
     try {
-      const concept = await this.prisma.concept.findUnique({
+      const concept = await this.prismaService.concept.findUnique({
         where: { id: conceptId },
       });
 
@@ -35,7 +35,7 @@ export class ConceptsService {
         throw new NotFoundException(`Concept with ID ${conceptId} not found`);
       }
 
-      return this.prisma.concept.delete({ where: { id: conceptId } });
+      return this.prismaService.concept.delete({ where: { id: conceptId } });
     } catch (error) {
       this.handlePrismaError(error);
     }
@@ -43,7 +43,7 @@ export class ConceptsService {
 
   async updateConcept(conceptId: string, updateData: CreateConceptDto) {
     try {
-      const concept = await this.prisma.concept.findUnique({
+      const concept = await this.prismaService.concept.findUnique({
         where: { id: conceptId },
       });
 
@@ -51,13 +51,17 @@ export class ConceptsService {
         throw new NotFoundException(`Concept with ID ${conceptId} not found`);
       }
 
-      return this.prisma.concept.update({
+      return this.prismaService.concept.update({
         where: { id: conceptId },
         data: updateData,
       });
     } catch (error) {
       this.handlePrismaError(error);
     }
+  }
+
+  async getAllProducts() {
+    return this.prismaService.concept.findMany();
   }
 
   private handlePrismaError(error: any) {
