@@ -51,43 +51,6 @@ model ConceptProduct{
   @@unique([conceptId, productId])
 }
 
-
-model Image{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  fileName String
-  url String
-  analysis ImageAnalysis?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ImageAnalysis{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  imageId String @unique @db.ObjectId 
-  image Image @relation(fields: [imageId], references: [id])
-  createdAt DateTime @default(now())
-  detectedObjects DetectedObject[]
-  updatedAt DateTime @updatedAt
-}
-
-model DetectedObject {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  label String
-  confidence Float
-  imageAnalysisId String @db.ObjectId
-  imageAnalysis ImageAnalysis @relation(fields: [imageAnalysisId], references: [id])
-  vertices Vertex[]  // if you want to store bounding box information
-  associatedProducts Product[]  // relationships to products associated with this detected object
-}
-
-model Vertex {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  x Float
-  y Float
-  detectedObjectId String @db.ObjectId
-  object DetectedObject @relation(fields: [detectedObjectId], references: [id])
-}
-
 model Product {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
@@ -98,20 +61,25 @@ model Product {
   url String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  partnerIds String[] @db.ObjectId
-  partners  Partner[] @relation(fields: [partnerIds],references: [id])
-  objectId String @db.ObjectId
-  detectedObjects DetectedObject @relation(fields: [objectId],references: [id])
   conceptProducts ConceptProduct[]
+  partnerProducts PartnerProduct[]
+}
+
+model PartnerProduct{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  partnerId String @db.ObjectId
+  productId String @db.ObjectId
+  partner Partner @relation(fields: [partnerId],references: [id])
+  product Product @relation(fields: [productId],references: [id])
+  @@unique([partnerId, productId])
 }
 
 model Partner {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  productIds String[] @db.ObjectId
-  products  Product[] @relation(fields: [productIds],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  partnerProducts PartnerProduct[]
 }
 
 
