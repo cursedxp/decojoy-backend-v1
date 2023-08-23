@@ -25,4 +25,18 @@ export class ConceptsService {
 
     return this.prisma.concept.delete({ where: { id: conceptId } });
   }
+  async updateConcept(conceptId: string, updateData: CreateConceptDto) {
+    const concept = await this.prisma.concept.findUnique({
+      where: { id: conceptId },
+    });
+
+    if (!concept) {
+      throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+    }
+
+    return this.prisma.concept.update({
+      where: { id: conceptId },
+      data: updateData,
+    });
+  }
 }
