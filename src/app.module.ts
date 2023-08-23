@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { ImageStorageModule } from './image-storage/imageStorage.module';
 import { ConceptModule } from './concept/concepts.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ConceptModule } from './concept/concepts.module';
     AdminModule,
     ImageStorageModule,
     ConceptModule,
+    ProductModule,
   ],
 })
 export class AppModule {}
