@@ -18,29 +18,39 @@ model User{
   role Role @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  createdConcepts Concept[] @relation("createdConcepts")
-  purchasedConcepts Concept[] @relation("purchasedConcepts")
+  createdConcepts Concept[] @relation("CreatedConcepts")
+  purchasedConcepts Concept[] @relation("PurchasedConcepts")
 }
 
 
-model Concept{
+model Concept {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   thumbnail String
   images String[]
   description String
-  style Style
-  price Int?
+  style  Style
+  price  Int?
   roomType Room
-  userId String @db.ObjectId
-  createdBy User @relation("createdConcepts",fields: [userId],references: [id])
-  purchasedBy User @relation("purchasedConcepts",fields: [userId],references: [id])
+  createdByUserId String @db.ObjectId
+  createdBy User @relation("CreatedConcepts", fields: [createdByUserId], references: [id])
+  purchasedByUserId String? @db.ObjectId
+  purchasedBy User? @relation("PurchasedConcepts", fields: [purchasedByUserId], references: [id])
   status Status @default(DRAFT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  productIds String[] @db.ObjectId
-  products Product[] @relation(fields: [productIds],references: [id])
+  conceptProducts ConceptProduct[]
 }
+
+model ConceptProduct{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  conceptId String @db.ObjectId
+  productId String @db.ObjectId
+  concept Concept @relation(fields: [conceptId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@unique([conceptId, productId])
+}
+
 
 model Image{
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -86,14 +96,13 @@ model Product {
   category String
   price Int?
   url String
-  conceptIds String[] @db.ObjectId
-  concepts Concept[] @relation(fields: [conceptIds],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   partnerIds String[] @db.ObjectId
   partners  Partner[] @relation(fields: [partnerIds],references: [id])
   objectId String @db.ObjectId
-  detectedObjects DetectedObject @relation(fields: [objectId],references: [id]) 
+  detectedObjects DetectedObject @relation(fields: [objectId],references: [id])
+  conceptProducts ConceptProduct[]
 }
 
 model Partner {
@@ -112,7 +121,7 @@ enum Role {
   PARTNER
 }
 
-enum Style{
+enum Style {
   MINIMALIST
   MODERN
   INDUSTRIAL
@@ -124,12 +133,12 @@ enum Style{
   BOHEMIAN
   ELECTIC
 }
-enum Status{
+enum Status {
   DRAFT
   PUBLISHED
 }
 
-enum Room{
+enum Room {
  KITCHEN
   LIVINGROOM
   BEDROOM
