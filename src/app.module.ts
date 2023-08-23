@@ -5,8 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { ImageStorageModule } from './image-storage/imageStorage.module';
-import { VisionService } from './vision-service/vision-service';
-import { ImageOperationsService } from './image-operations/image-operations.service';
+import { ConceptModule } from './concept/concepts.module';
 
 @Module({
   imports: [
@@ -16,7 +15,7 @@ import { ImageOperationsService } from './image-operations/image-operations.serv
     UserModule,
     AdminModule,
     ImageStorageModule,
+    ConceptModule,
   ],
-  providers: [VisionService, ImageOperationsService],
 })
 export class AppModule {}
