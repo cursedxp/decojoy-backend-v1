@@ -65,7 +65,26 @@ export class ConceptsService {
     }
   }
 
-  async getAllProducts() {
+  async publishConcept(conceptId: string) {
+    try {
+      const concept = await this.prismaService.concept.findUnique({
+        where: { id: conceptId },
+      });
+
+      if (!concept) {
+        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+      }
+
+      return this.prismaService.concept.update({
+        where: { id: conceptId },
+        data: { status: 'PUBLISHED' },
+      });
+    } catch (error) {
+      this.handlePrismaError(error);
+    }
+  }
+
+  async getAllConcepts() {
     return this.prismaService.concept.findMany();
   }
 
