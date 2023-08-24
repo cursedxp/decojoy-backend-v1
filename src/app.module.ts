@@ -7,8 +7,7 @@ import { ImageStorageModule } from './imageStorage/imageStorage.module';
 import { ConceptModule } from './concept/concepts.module';
 import { ProductModule } from './product/product.module';
 import { ConceptProductsModule } from './conceptProducts/conceptProducts.module';
-import { ConceptProductsController } from './conceptProducts/conceptProducts.controller';
-import { ConceptProductsService } from './conceptProducts/conceptProducts.service';
+import { PartnerModule } from './partner/partner.module';
 
 @Module({
   imports: [
@@ -20,6 +19,7 @@ import { ConceptProductsService } from './conceptProducts/conceptProducts.servic
     ConceptModule,
     ProductModule,
     ConceptProductsModule,
+    PartnerModule,
   ],
 })
 export class AppModule {}
