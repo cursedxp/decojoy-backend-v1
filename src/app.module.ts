@@ -3,9 +3,12 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { ImageStorageModule } from './image-storage/imageStorage.module';
+import { ImageStorageModule } from './imageStorage/imageStorage.module';
 import { ConceptModule } from './concept/concepts.module';
 import { ProductModule } from './product/product.module';
+import { ConceptProductsModule } from './conceptProducts/conceptProducts.module';
+import { ConceptProductsController } from './conceptProducts/conceptProducts.controller';
+import { ConceptProductsService } from './conceptProducts/conceptProducts.service';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { ProductModule } from './product/product.module';
     ImageStorageModule,
     ConceptModule,
     ProductModule,
+    ConceptProductsModule,
   ],
 })
 export class AppModule {}
