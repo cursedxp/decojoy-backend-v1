@@ -34,8 +34,13 @@ export class ConceptsService {
       if (!concept) {
         throw new NotFoundException(`Concept with ID ${conceptId} not found`);
       }
-
-      return this.prismaService.concept.delete({ where: { id: conceptId } });
+      const deletedConcept = this.prismaService.concept.delete({
+        where: { id: conceptId },
+      });
+      return {
+        message: 'Concept has been deleted',
+        deletedConcept: deletedConcept,
+      };
     } catch (error) {
       this.handlePrismaError(error);
     }
