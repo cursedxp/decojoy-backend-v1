@@ -31,6 +31,13 @@ export class ProductService {
       if (!product) {
         throw new NotFoundException(`Concept with ID ${productId} not found`);
       }
+      const deletedProduct = this.prismaService.product.delete({
+        where: { id: productId },
+      });
+      return {
+        message: 'Product has been deleted',
+        deletedProduct: deletedProduct,
+      };
     } catch (error) {
       this.handlePrismaError(error);
     }
