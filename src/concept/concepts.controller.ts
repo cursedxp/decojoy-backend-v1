@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   Put,
+  Patch,
 } from '@nestjs/common';
 import { ConceptsService } from './concepts.service';
 import { CreateConceptDto } from './dto';
@@ -17,9 +18,9 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
 
-  @Post('create')
   @UseGuards(AuthGuard)
   @Roles('ADMIN')
+  @Post('create')
   async create(
     @Body() createConceptDto: CreateConceptDto,
     @Request() request: Request,
@@ -27,15 +28,22 @@ export class ConceptsController {
     const payload = request['user'];
     return this.conceptsService.createConcept(createConceptDto, payload);
   }
+
   @Delete(':conceptId')
   async delete(@Param('conceptId') conceptId: string) {
     return this.conceptsService.deleteConcept(conceptId);
   }
+
   @Put(':conceptId')
   async update(
     @Param('conceptId') conceptId: string,
     @Body() updateConceptDto: CreateConceptDto,
   ) {
     return this.conceptsService.updateConcept(conceptId, updateConceptDto);
+  }
+
+  @Patch(':conceptId/publish')
+  async publishConcept(@Param('conceptId') conceptId: string) {
+    return this.conceptsService.publishConcept(conceptId);
   }
 }
