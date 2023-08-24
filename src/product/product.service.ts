@@ -13,7 +13,7 @@ export class ProductService {
   constructor(private readonly prismaService: PrismaService) {}
   async createProduct(data: CreateProductDto) {
     try {
-      return this.prismaService.product.create({
+      return await this.prismaService.product.create({
         data: {
           ...data,
         },
@@ -31,13 +31,20 @@ export class ProductService {
       if (!product) {
         throw new NotFoundException(`Concept with ID ${productId} not found`);
       }
-      const deletedProduct = this.prismaService.product.delete({
+      // Remove the product from associated partnerProducts.
+      await this.prismaService.partnerProduct.deleteMany({
+        where: { productId: productId },
+      });
+
+      // Remove the product from associated conceptProducts.
+      await this.prismaService.conceptProduct.deleteMany({
+        where: { productId: productId },
+      });
+
+      // Delete the product itself.
+      return await this.prismaService.product.delete({
         where: { id: productId },
       });
-      return {
-        message: 'Product has been deleted',
-        deletedProduct: deletedProduct,
-      };
     } catch (error) {
       this.handlePrismaError(error);
     }
@@ -53,7 +60,7 @@ export class ProductService {
         throw new NotFoundException(`Concept with ID ${productId} not found`);
       }
 
-      return this.prismaService.product.update({
+      return await this.prismaService.product.update({
         where: { id: productId },
         data: updateData,
       });
