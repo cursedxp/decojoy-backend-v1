@@ -89,6 +89,11 @@ export class ConceptProductsService {
       this.handlePrismaError(error);
     }
   }
+
+  async getAllConceptProducts() {
+    return await this.prismaService.conceptProduct.findMany();
+  }
+
   private handlePrismaError(error: any) {
     switch (error.code) {
       case 'P2002':
