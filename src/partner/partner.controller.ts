@@ -1,12 +1,25 @@
-import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+  Get,
+} from '@nestjs/common';
 import { CreatePartnerDto } from './dto';
 import { PartnerService } from './partner.services';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { PaginationDto } from 'src/pagination/dto';
+import { PaginationService } from 'src/pagination/pagination.service';
 
 @Controller('partner')
 export class PartnerController {
-  constructor(private partnerService: PartnerService) {}
+  constructor(
+    private partnerService: PartnerService,
+    private paginationService: PaginationService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Roles('ADMIN')
@@ -17,5 +30,9 @@ export class PartnerController {
   @Post(':partnerId')
   async deletePartner(@Param() partnerId: string) {
     return this.partnerService.deletePartner(partnerId);
+  }
+  @Get()
+  async getPartners(@Query() paginationDto: PaginationDto) {
+    return this.partnerService.getAllPartners(paginationDto);
   }
 }

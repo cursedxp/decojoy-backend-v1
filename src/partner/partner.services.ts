@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreatePartnerDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Injectable()
 export class PartnerService {
@@ -42,8 +43,12 @@ export class PartnerService {
     }
   }
 
-  async getAllConceptProducts() {
-    return await this.prismaService.partner.findMany();
+  async getAllPartners(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
+    return this.prismaService.partner.findMany({
+      take: paginationDto.limit,
+      skip: skip,
+    });
   }
 
   private handlePrismaError(error: any) {
