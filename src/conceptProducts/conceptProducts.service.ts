@@ -8,6 +8,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddProductToConceptDto } from './dto';
 import { CreateAndAddProductToConceptDto } from './dto/createAndAddProduct.dto';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Injectable()
 export class ConceptProductsService {
@@ -85,8 +86,16 @@ export class ConceptProductsService {
     }
   }
 
-  async getAllConceptProducts() {
-    return await this.prismaService.conceptProduct.findMany();
+  async getAllConceptProducts(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
+    return this.prismaService.conceptProduct.findMany({
+      take: paginationDto.limit,
+      skip: skip,
+      include: {
+        concept: true,
+        product: true,
+      },
+    });
   }
 
   private async addProductToPartner(
