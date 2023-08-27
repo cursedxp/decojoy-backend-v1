@@ -7,15 +7,21 @@ import {
   Body,
   Param,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PartnerProductsServices } from './parnerProduct.services';
 import { CreatePartnerProductDto, UpdatePartnerProductDto } from './dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { PaginationService } from 'src/pagination/pagination.service';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Controller('parner-products')
 export class PartnerProductsController {
-  constructor(private readonly service: PartnerProductsServices) {}
+  constructor(
+    private readonly service: PartnerProductsServices,
+    private readonly paginationService: PaginationService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Roles('ADMIN')
@@ -23,10 +29,9 @@ export class PartnerProductsController {
   async create(@Body() dto: CreatePartnerProductDto) {
     return this.service.createPartnerProduct(dto);
   }
-
   @Get()
-  async getAll() {
-    return this.service.getAllPartnerProducts();
+  async getPartnerProducts(@Query() paginationDto: PaginationDto) {
+    return this.service.getAllPartnerProducts(paginationDto);
   }
 
   @Put(':id')

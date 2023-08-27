@@ -8,23 +8,25 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePartnerProductDto } from 'src/product/dto';
 import { UpdatePartnerProductDto } from './dto';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Injectable()
 export class PartnerProductsServices {
   constructor(private readonly prismaService: PrismaService) {}
+
   async createPartnerProduct(dto: CreatePartnerProductDto) {
     try {
-      const partnerProduct = this.prismaService.partnerProduct.create({
+      return this.prismaService.partnerProduct.create({
         data: {
           partner: { connect: { id: dto.partnerId } },
           product: { connect: { id: dto.productId } },
         },
       });
-      return partnerProduct;
     } catch (error) {
       this.handlePrismaError(error);
     }
   }
+
   async updatePartnerProduct(id: string, dto: UpdatePartnerProductDto) {
     try {
       const partnerProduct = await this.prismaService.partnerProduct.findUnique(
@@ -66,8 +68,11 @@ export class PartnerProductsServices {
     }
   }
 
-  async getAllPartnerProducts() {
+  async getAllPartnerProducts(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
     return this.prismaService.partnerProduct.findMany({
+      take: paginationDto.limit,
+      skip: skip,
       include: {
         partner: true,
         product: true,
