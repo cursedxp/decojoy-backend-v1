@@ -20,6 +20,7 @@ model User{
   updatedAt DateTime @updatedAt
   createdConcepts Concept[] @relation("CreatedConcepts")
   purchasedConcepts Concept[] @relation("PurchasedConcepts")
+  likedProducts ProductLike[]
 }
 model Image{
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -69,6 +70,7 @@ model Product {
   updatedAt DateTime @updatedAt
   conceptProducts ConceptProduct[]
   partnerProducts PartnerProduct[]
+  likes ProductLike[]
 }
 
 model PartnerProduct{
@@ -88,6 +90,14 @@ model Partner {
   partnerProducts PartnerProduct[]
 }
 
+model ProductLike {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  productId String @db.ObjectId
+  product  Product @relation(fields: [productId], references: [id])
+  user     User @relation(fields: [userId], references: [id])
+  @@unique([userId, productId])
+}
 
 enum Role {
   ADMIN
