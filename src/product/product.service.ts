@@ -7,10 +7,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto';
+import { PaginationService } from 'src/pagination/pagination.service';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly paginationService: PaginationService,
+  ) {}
   async createProduct(data: CreateProductDto) {
     try {
       return await this.prismaService.product.create({
@@ -69,8 +74,12 @@ export class ProductService {
     }
   }
 
-  async getAllProducts() {
-    return this.prismaService.product.findMany();
+  async getAllProducts(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
+    return this.prismaService.product.findMany({
+      take: paginationDto.limit,
+      skip: skip,
+    });
   }
 
   private handlePrismaError(error: any) {
