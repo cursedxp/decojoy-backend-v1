@@ -34,4 +34,12 @@ export class CreateAndAddProductToConceptDto {
   @IsNotEmpty()
   @IsUrl()
   url: string;
+
+  @IsOptional()
+  @IsString()
+  partnerId?: string;
+
+  @IsOptional()
+  @IsString()
+  newPartnerName?: string;
 }
