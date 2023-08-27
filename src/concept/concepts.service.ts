@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateConceptDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Injectable()
 export class ConceptsService {
@@ -84,8 +85,12 @@ export class ConceptsService {
     }
   }
 
-  async getAllConcepts() {
-    return this.prismaService.concept.findMany();
+  async getAllConcepts(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
+    return this.prismaService.concept.findMany({
+      take: paginationDto.limit,
+      skip: skip,
+    });
   }
 
   private handlePrismaError(error: any) {

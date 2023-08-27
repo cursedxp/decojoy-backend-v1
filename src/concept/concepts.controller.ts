@@ -8,11 +8,14 @@ import {
   Param,
   Put,
   Patch,
+  Query,
+  Get,
 } from '@nestjs/common';
 import { ConceptsService } from './concepts.service';
 import { CreateConceptDto } from './dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { PaginationDto } from 'src/pagination/dto';
 
 @Controller('concepts')
 export class ConceptsController {
@@ -45,5 +48,9 @@ export class ConceptsController {
   @Patch(':conceptId/publish')
   async publishConcept(@Param('conceptId') conceptId: string) {
     return this.conceptsService.publishConcept(conceptId);
+  }
+  @Get()
+  async getPartners(@Query() paginationDto: PaginationDto) {
+    return this.conceptsService.getAllConcepts(paginationDto);
   }
 }
