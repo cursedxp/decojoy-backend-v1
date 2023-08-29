@@ -6,13 +6,11 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   Query,
 } from '@nestjs/common';
 import { PartnerProductsServices } from './parnerProduct.services';
 import { CreatePartnerProductDto, UpdatePartnerProductDto } from './dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+
 import { PaginationService } from 'src/pagination/pagination.service';
 import { PaginationDto } from 'src/pagination/dto';
 
@@ -23,8 +21,6 @@ export class PartnerProductsController {
     private readonly paginationService: PaginationService,
   ) {}
 
-  @UseGuards(AuthGuard)
-  @Roles('ADMIN')
   @Post()
   async create(@Body() dto: CreatePartnerProductDto) {
     return this.service.createPartnerProduct(dto);

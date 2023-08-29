@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   Request,
-  UseGuards,
   Delete,
   Param,
   Put,
@@ -13,16 +12,12 @@ import {
 } from '@nestjs/common';
 import { ConceptsService } from './concepts.service';
 import { CreateConceptDto } from './dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
 import { PaginationDto } from 'src/pagination/dto';
 
 @Controller('concepts')
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
 
-  @UseGuards(AuthGuard)
-  @Roles('ADMIN')
   @Post('create')
   async create(
     @Body() createConceptDto: CreateConceptDto,

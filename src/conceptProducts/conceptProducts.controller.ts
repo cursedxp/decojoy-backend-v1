@@ -1,10 +1,9 @@
-import { Controller, Post, Body, UseGuards, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { AddProductToConceptDto } from './dto';
 import { ConceptProductsService } from './conceptProducts.service';
 import { CreateAndAddProductToConceptDto } from './dto/createAndAddProduct.dto';
 import { ConceptProduct } from '@prisma/client';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+
 import { PaginationDto } from 'src/pagination/dto';
 import { PaginationService } from 'src/pagination/pagination.service';
 
@@ -14,8 +13,7 @@ export class ConceptProductsController {
     private conceptProductService: ConceptProductsService,
     private paginationService: PaginationService,
   ) {}
-  @UseGuards(AuthGuard)
-  @Roles('ADMIN')
+
   @Post('add-product-to-concept')
   async addProductToConcept(
     @Body() dto: AddProductToConceptDto,
