@@ -93,6 +93,17 @@ export class ConceptsService {
     });
   }
 
+  async getAllPublishedConcepts(paginationDto: PaginationDto) {
+    const skip = (paginationDto.page - 1) * paginationDto.limit;
+    return this.prismaService.concept.findMany({
+      where: {
+        status: 'PUBLISHED',
+      },
+      take: paginationDto.limit,
+      skip: skip,
+    });
+  }
+
   private handlePrismaError(error: any) {
     switch (error.code) {
       case 'P2002':

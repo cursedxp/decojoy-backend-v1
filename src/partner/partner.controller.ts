@@ -1,17 +1,24 @@
-import { Controller, Post, Body, Param, Query, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Query,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import { CreatePartnerDto } from './dto';
 import { PartnerService } from './partner.services';
 
 import { PaginationDto } from 'src/pagination/dto';
-import { PaginationService } from 'src/pagination/pagination.service';
+import { Roles } from 'src/auth/roles.decorator';
+import { JwtStrategy } from 'src/auth/auth0.strategy';
 
 @Controller('partner')
 export class PartnerController {
-  constructor(
-    private partnerService: PartnerService,
-    private paginationService: PaginationService,
-  ) {}
-
+  constructor(private partnerService: PartnerService) {}
+  @UseGuards(JwtStrategy)
+  @Roles('ADMIN')
   @Post('create-partner')
   async createPartner(@Body() data: CreatePartnerDto) {
     return this.partnerService.createPartner(data);

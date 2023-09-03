@@ -7,20 +7,18 @@ import {
   Body,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { PartnerProductsServices } from './parnerProduct.services';
 import { CreatePartnerProductDto, UpdatePartnerProductDto } from './dto';
-
-import { PaginationService } from 'src/pagination/pagination.service';
+import { JwtStrategy } from 'src/auth/auth0.strategy';
 import { PaginationDto } from 'src/pagination/dto';
-
+import { Roles } from 'src/auth/roles.decorator';
 @Controller('parner-products')
 export class PartnerProductsController {
-  constructor(
-    private readonly service: PartnerProductsServices,
-    private readonly paginationService: PaginationService,
-  ) {}
-
+  constructor(private readonly service: PartnerProductsServices) {}
+  @UseGuards(JwtStrategy)
+  @Roles('ADMIN')
   @Post()
   async create(@Body() dto: CreatePartnerProductDto) {
     return this.service.createPartnerProduct(dto);

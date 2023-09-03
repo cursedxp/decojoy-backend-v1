@@ -7,19 +7,19 @@ import {
   Put,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto';
 import { PaginationDto } from 'src/pagination/dto';
-import { PaginationService } from 'src/pagination/pagination.service';
+import { Roles } from 'src/auth/roles.decorator';
+import { JwtStrategy } from 'src/auth/auth0.strategy';
 
 @Controller('products')
 export class ProductController {
-  constructor(
-    private productService: ProductService,
-    private readonly paginationService: PaginationService,
-  ) {}
-
+  constructor(private productService: ProductService) {}
+  @UseGuards(JwtStrategy)
+  @Roles('ADMIN')
   @Post('create')
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productService.createProduct(createProductDto);
