@@ -38,7 +38,7 @@ model Concept {
   images String[]
   description String
   style  Style
-  price  Int?
+  price  Float?
   roomType Room
   createdByUserId String @db.ObjectId
   createdBy User @relation("CreatedConcepts", fields: [createdByUserId], references: [id])
@@ -85,7 +85,7 @@ model Product {
   image String
   description String
   category String
-  price Int?
+  price Float?
   url String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,6 +119,22 @@ model ProductLike {
   user     User @relation(fields: [userId], references: [id])
   @@unique([userId, productId])
 }
+
+model Transaction{ 
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId      String
+  payerId        String
+  state          String
+  amount         Int
+  currency       String
+  description    String
+  paymentMethod  String
+  payerEmail     String
+  payerFirstName String
+  payerLastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  }
 
 enum Role {
   ADMIN
