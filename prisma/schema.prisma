@@ -21,7 +21,7 @@ model User{
   createdConcepts Concept[] @relation("CreatedConcepts")
   purchasedConcepts Concept[] @relation("PurchasedConcepts")
   likedProducts ProductLike[]
-  conceptCart ConceptCart? 
+  cart Cart? 
 }
 model Image{
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -48,7 +48,7 @@ model Concept {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   conceptProducts ConceptProduct[]
-  cartItems ConceptCartItem[]
+  cartItems CartItem[]
 }
 
 model ConceptProduct{
@@ -60,20 +60,20 @@ model ConceptProduct{
   @@unique([conceptId, productId])
 }
 
-model ConceptCart {
+model Cart {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
-  cartItems ConceptCartItem[]
+  cartItems CartItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ConceptCartItem {
+model CartItem {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   cartId String @db.ObjectId
   conceptId String @db.ObjectId
-  cart ConceptCart @relation(fields: [cartId], references: [id])
+  cart Cart @relation(fields: [cartId], references: [id])
   concept Concept @relation(fields: [conceptId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
