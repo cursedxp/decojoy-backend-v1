@@ -36,6 +36,10 @@ export class PaypalService {
 
         paypal.payment.create(create_payment_json, function (error, payment) {
           if (error) {
+            console.error(
+              'PayPal Error during payment creation:',
+              error.response ? error.response : error,
+            );
             reject(error);
           } else {
             resolve(payment);
@@ -67,6 +71,10 @@ export class PaypalService {
           execute_payment_json,
           function (error, payment) {
             if (error) {
+              console.error(
+                'PayPal Error during payment execution:',
+                error.response ? error.response : error,
+              );
               reject(error);
             } else {
               resolve(payment);

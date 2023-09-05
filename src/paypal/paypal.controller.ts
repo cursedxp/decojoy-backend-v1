@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PaypalService } from './paypal.service';
 
-@Controller('paypal')
+@Controller('payment')
 export class PaypalController {
   constructor(private readonly paypalService: PaypalService) {}
 
