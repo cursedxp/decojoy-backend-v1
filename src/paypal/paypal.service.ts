@@ -111,7 +111,7 @@ export class PaypalService {
     const { id, state, payer, transactions } = paymentResponse;
 
     try {
-      const transaction = this.prismaService.transaction.create({
+      const transaction = await this.prismaService.transaction.create({
         data: {
           paymentId: id,
           payerId: payer.payer_info.payer_id,
