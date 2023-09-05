@@ -10,6 +10,7 @@ import { LikeProductModule } from './likeProduct/likeProduct.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { AuthModule } from './auth/auth.module';
 import { PaypalModule } from './paypal/paypal.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PaypalModule } from './paypal/paypal.module';
     PaginationModule,
     AuthModule,
     PaypalModule,
+    CartModule,
   ],
 })
 export class AppModule {}
