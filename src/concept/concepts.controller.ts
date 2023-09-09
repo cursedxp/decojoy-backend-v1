@@ -14,14 +14,11 @@ import {
 import { ConceptsService } from './concepts.service';
 import { CreateConceptDto } from './dto';
 import { PaginationDto } from 'src/pagination/dto';
-import { JwtStrategy } from 'src/auth/auth0.strategy';
-import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('concepts')
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
-  @UseGuards(JwtStrategy)
-  @Roles('ADMIN')
+
   @Post('create')
   async create(
     @Body() createConceptDto: CreateConceptDto,

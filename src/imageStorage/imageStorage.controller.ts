@@ -9,22 +9,20 @@ import {
 import { ImageStorageService } from './imageStorage.service';
 import { ConfigService } from '@nestjs/config';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { JwtStrategy } from 'src/auth/auth0.strategy';
-import { Roles } from 'src/auth/roles.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 @Controller('assets')
 export class ImageStorageController {
   constructor(
     private imageService: ImageStorageService,
     private config: ConfigService,
   ) {}
-  @UseGuards(JwtStrategy)
-  @Roles('ADMIN')
   @Post('upload')
+  @UseGuards(AuthGuard)
+  @Roles('ADMIN')
   @UseInterceptors(FilesInterceptor('images'))
   async uploadImage(@UploadedFiles() images: Express.Multer.File[]) {
     const imageUrls = [];
-    // const croppedImageUrls = [];
-    // const similarProductUrls = [];
 
     try {
       for (const image of images) {

@@ -10,8 +10,6 @@ import {
 } from '@nestjs/common';
 import { PaypalService } from './paypal.service';
 import { CartService } from 'src/cart/cart.service';
-import { Roles } from 'src/auth/roles.decorator';
-import { JwtStrategy } from 'src/auth/auth0.strategy';
 
 @Controller('payment')
 export class PaypalController {
@@ -19,8 +17,7 @@ export class PaypalController {
     private readonly paypalService: PaypalService,
     private cartService: CartService,
   ) {}
-  @UseGuards(JwtStrategy)
-  @Roles('ADMIN')
+
   @Post('create')
   async createPayment(@Body('amount') amount: number) {
     try {
