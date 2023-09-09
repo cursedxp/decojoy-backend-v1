@@ -8,9 +8,10 @@ import { ConceptProductsModule } from './conceptProducts/conceptProducts.module'
 import { PartnerModule } from './partner/partner.module';
 import { LikeProductModule } from './likeProduct/likeProduct.module';
 import { PaginationModule } from './pagination/pagination.module';
-import { AuthModule } from './auth/auth.module';
 import { PaypalModule } from './paypal/paypal.module';
 import { CartModule } from './cart/cart.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -23,9 +24,10 @@ import { CartModule } from './cart/cart.module';
     PartnerModule,
     LikeProductModule,
     PaginationModule,
-    AuthModule,
     PaypalModule,
     CartModule,
+    AuthModule,
+    JwtModule,
   ],
 })
 export class AppModule {}

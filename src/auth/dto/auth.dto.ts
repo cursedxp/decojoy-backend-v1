@@ -1,14 +1,23 @@
-import { IsString, IsEmail, IsOptional } from 'class-validator';
-export class CreateUserDto {
-  @IsString()
-  auth0Id: string;
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
-  @IsString()
-  @IsOptional()
-  fullName?: string;
-
-  @IsEmail()
+export class SignUpDto {
+  @IsEmail({}, { message: 'Please enter a valid email address.' })
+  @IsNotEmpty({ message: 'Email address is required.' })
   email: string;
 
-  // ... other fields ...
+  @IsNotEmpty({ message: 'Password is required.' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long.' })
+  password: string;
+
+  @IsNotEmpty({ message: 'Full name is required.' })
+  fullName: string;
+}
+
+export class SignInDto {
+  @IsEmail({}, { message: 'Please enter a valid email address.' })
+  @IsNotEmpty({ message: 'Email address is required.' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Password is required.' })
+  password: string;
 }
