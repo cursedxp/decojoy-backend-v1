@@ -14,11 +14,15 @@ import {
 import { ConceptsService } from './concepts.service';
 import { CreateConceptDto } from './dto';
 import { PaginationDto } from 'src/pagination/dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('concepts')
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
-
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
   @Post('create')
   async create(
     @Body() createConceptDto: CreateConceptDto,
