@@ -12,6 +12,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 @Controller('assets')
 export class ImageStorageController {
   constructor(
@@ -19,8 +21,6 @@ export class ImageStorageController {
     private config: ConfigService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN')
   @Post('upload')
   @UseInterceptors(FilesInterceptor('images'))
   async uploadImage(@UploadedFiles() images: Express.Multer.File[]) {
