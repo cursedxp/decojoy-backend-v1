@@ -50,7 +50,7 @@ export class ConceptsController {
     return this.conceptsService.publishConcept(conceptId);
   }
   @Get()
-  async getPartners(@Query() paginationDto: PaginationDto) {
+  async getAllConcepts(@Query() paginationDto: PaginationDto) {
     return this.conceptsService.getAllConcepts(paginationDto);
   }
 }
