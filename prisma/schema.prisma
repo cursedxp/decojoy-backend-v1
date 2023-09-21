@@ -153,6 +153,7 @@ enum Style {
   TRADITIONAL
   BOHEMIAN
   ELECTIC
+  CLASSIC
 }
 enum Status {
   DRAFT
