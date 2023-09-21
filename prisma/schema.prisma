@@ -171,5 +171,6 @@ enum Room {
   ENTRYWAY
   LIBRARY
   NURSERY
+  KIDSROOM
 }
 
