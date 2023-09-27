@@ -1,4 +1,10 @@
-import { IsString, IsArray, IsOptional, IsInt, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 import { Style, Room } from '@prisma/client';
 
 export class CreateConceptDto {
@@ -19,7 +25,7 @@ export class CreateConceptDto {
   style: Style;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   price?: number;
 
   @IsEnum(Room)
