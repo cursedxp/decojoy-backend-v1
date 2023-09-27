@@ -152,7 +152,7 @@ enum Style {
   ARTDECO
   TRADITIONAL
   BOHEMIAN
-  ELECTIC
+  ECLECTIC
   CLASSIC
 }
 enum Status {
