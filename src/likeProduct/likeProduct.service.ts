@@ -22,7 +22,7 @@ export class LikeProductService {
 
       return this.prismaService.productLike.create({
         data: {
-          userId: userId,
+          userAuth0Id: userId,
           productId: productId,
         },
       });

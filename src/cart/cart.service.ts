@@ -17,10 +17,12 @@ export class CartService {
   async findOrCreateCart(userId: string): Promise<any> {
     try {
       let cart = await this.prismaService.cart.findUnique({
-        where: { userId },
+        where: { userAuth0Id: userId },
       });
       if (!cart) {
-        cart = await this.prismaService.cart.create({ data: { userId } });
+        cart = await this.prismaService.cart.create({
+          data: { userAuth0Id: userId },
+        });
       }
       return cart;
     } catch (error) {
@@ -60,7 +62,7 @@ export class CartService {
   async getUserCart(userId: string): Promise<any> {
     try {
       const cart = this.prismaService.cart.findUnique({
-        where: { userId },
+        where: { userAuth0Id: userId },
         include: {
           cartItems: {
             include: {
