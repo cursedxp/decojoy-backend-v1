@@ -15,10 +15,21 @@ export class ConceptsService {
 
   async createConcept(data: CreateConceptDto, payload) {
     try {
+      // Find user by their auth0Id
+      const user = await this.prismaService.user.findUnique({
+        where: { auth0Id: payload.sub },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // Now create the concept using the user's id
       return this.prismaService.concept.create({
         data: {
           ...data,
-          createdBy: { connect: { id: payload.sub } },
+          createdByAuth0Id: payload.sub,
+          purchasedByAuth0Id: payload.sub,
         },
       });
     } catch (error) {

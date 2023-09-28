@@ -23,7 +23,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
 
-  @Post('create')
+  @Post('')
   async create(
     @Body() createConceptDto: CreateConceptDto,
     @Request() request: Request,

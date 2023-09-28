@@ -30,8 +30,4 @@ export class CreateConceptDto {
 
   @IsEnum(Room)
   roomType: Room;
-
-  @IsOptional()
-  @IsString()
-  userId?: string;
 }
