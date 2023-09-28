@@ -12,9 +12,8 @@ datasource db {
 
 model User{
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  fullName String?
+  auth0Id String? @unique
   email String @unique
-  password String
   role Role @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,10 +39,10 @@ model Concept {
   style  Style
   price  Float?
   roomType Room
-  createdByUserId String @db.ObjectId
-  createdBy User @relation("CreatedConcepts", fields: [createdByUserId], references: [id])
-  purchasedByUserId String? @db.ObjectId
-  purchasedBy User? @relation("PurchasedConcepts", fields: [purchasedByUserId], references: [id])
+  createdByAuth0Id String
+  createdBy User? @relation("CreatedConcepts", fields: [createdByAuth0Id], references: [auth0Id])
+  purchasedByAuth0Id String
+  purchasedBy User? @relation("PurchasedConcepts", fields: [purchasedByAuth0Id], references: [auth0Id])
   status Status @default(DRAFT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,8 +61,8 @@ model ConceptProduct{
 
 model Cart {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId @unique
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  userAuth0Id String @unique
+  user User @relation(fields: [userAuth0Id], references: [auth0Id], onDelete: Cascade) 
   cartItems CartItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -113,11 +112,11 @@ model Partner {
 
 model ProductLike {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String @db.ObjectId
+  userAuth0Id String @unique
   productId String @db.ObjectId
   product  Product @relation(fields: [productId], references: [id])
-  user     User @relation(fields: [userId], references: [id])
-  @@unique([userId, productId])
+  user     User @relation(fields: [userAuth0Id], references: [auth0Id])
+  @@unique([userAuth0Id, productId])
 }
 
 model Transaction{ 
