@@ -3,9 +3,13 @@ import * as jwksRsa from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UserService } from 'src/user/user.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private userService: UserService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -24,6 +28,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    // Check if user exists in your database based on the Auth0 user ID (sub)
+    let user = await this.userService.findByAuth0Id(payload.sub);
+
+    if (!user) {
+      // If not, create them
+      user = await this.userService.createWithAuth0(payload);
+    } else {
+      // If user exists, synchronize profile data
+      user = await this.userService.synchronizeProfile(payload, user);
+    }
+
     return payload;
   }
 }
