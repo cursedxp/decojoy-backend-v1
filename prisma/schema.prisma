@@ -38,7 +38,7 @@ model Concept {
   description String
   style  Style
   price  Float?
-  roomType Room
+  type Type
   createdByAuth0Id String
   createdBy User? @relation("CreatedConcepts", fields: [createdByAuth0Id], references: [auth0Id])
   purchasedByAuth0Id String
@@ -159,7 +159,7 @@ enum Status {
   PUBLISHED
 }
 
-enum Room {
+enum Type {
  KITCHEN
   LIVINGROOM
   BEDROOM

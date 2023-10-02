@@ -29,5 +29,5 @@ export class CreateConceptDto {
   price?: number;
 
   @IsEnum(Room)
-  roomType: Room;
+  type: Room;
 }
