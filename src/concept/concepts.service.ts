@@ -25,7 +25,7 @@ export class ConceptsService {
       }
 
       // Now create the concept using the user's id
-      const newConcept = this.prismaService.concept.create({
+      const newConcept = await this.prismaService.concept.create({
         data: {
           ...data,
           createdByAuth0Id: payload.sub,
@@ -34,7 +34,7 @@ export class ConceptsService {
       });
       return {
         message: 'Concept has been created',
-        newConcept: newConcept,
+        newConcept: newConcept.title,
       };
     } catch (error) {
       this.handlePrismaError(error);

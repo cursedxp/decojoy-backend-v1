@@ -5,18 +5,12 @@ import {
   IsNumber,
   IsEnum,
 } from 'class-validator';
-import { Style, Room } from '@prisma/client';
+// import { Style, Type } from '../concept.entity';
+import { Style, Type } from '@prisma/client';
 
 export class CreateConceptDto {
   @IsString()
   title: string;
-
-  @IsString()
-  thumbnail: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  images: string[];
 
   @IsString()
   description: string;
@@ -24,10 +18,17 @@ export class CreateConceptDto {
   @IsEnum(Style)
   style: Style;
 
+  @IsEnum(Type)
+  type: Type;
+
   @IsOptional()
   @IsNumber()
   price?: number;
 
-  @IsEnum(Room)
-  type: Room;
+  @IsArray()
+  @IsString({ each: true })
+  images: string[];
+
+  @IsString()
+  thumbnail: string;
 }
