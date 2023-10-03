@@ -29,7 +29,7 @@ export class ConceptsService {
         data: {
           ...data,
           createdByAuth0Id: payload.sub,
-          purchasedByAuth0Id: payload.sub,
+          purchasedByAuth0Id: null,
         },
       });
       return {
