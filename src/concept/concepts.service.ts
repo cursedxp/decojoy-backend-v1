@@ -40,39 +40,40 @@ export class ConceptsService {
     }
   }
 
-  async deleteConcept(conceptId: string) {
+  async deleteConcept(id: string) {
     try {
       const concept = await this.prismaService.concept.findUnique({
-        where: { id: conceptId },
+        where: { id: id },
       });
 
       if (!concept) {
-        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+        throw new NotFoundException(`Concept with ID ${id} not found`);
       }
-      const deletedConcept = this.prismaService.concept.delete({
-        where: { id: conceptId },
+      const deletedConcept = await this.prismaService.concept.delete({
+        where: { id: id },
       });
       return {
+        success: true,
         message: 'Concept has been deleted',
-        deletedConcept: deletedConcept,
+        data: deletedConcept,
       };
     } catch (error) {
       this.handlePrismaError(error);
     }
   }
 
-  async updateConcept(conceptId: string, updateData: CreateConceptDto) {
+  async updateConcept(id: string, updateData: CreateConceptDto) {
     try {
       const concept = await this.prismaService.concept.findUnique({
-        where: { id: conceptId },
+        where: { id: id },
       });
 
       if (!concept) {
-        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+        throw new NotFoundException(`Concept with ID ${id} not found`);
       }
 
       return this.prismaService.concept.update({
-        where: { id: conceptId },
+        where: { id: id },
         data: updateData,
       });
     } catch (error) {
@@ -80,18 +81,18 @@ export class ConceptsService {
     }
   }
 
-  async publishConcept(conceptId: string) {
+  async publishConcept(id: string) {
     try {
       const concept = await this.prismaService.concept.findUnique({
-        where: { id: conceptId },
+        where: { id: id },
       });
 
       if (!concept) {
-        throw new NotFoundException(`Concept with ID ${conceptId} not found`);
+        throw new NotFoundException(`Concept with ID ${id} not found`);
       }
 
       return this.prismaService.concept.update({
-        where: { id: conceptId },
+        where: { id: id },
         data: { status: 'PUBLISHED' },
       });
     } catch (error) {

@@ -32,22 +32,22 @@ export class ConceptsController {
     return this.conceptsService.createConcept(createConceptDto, payload);
   }
 
-  @Delete(':conceptId')
-  async delete(@Param('conceptId') conceptId: string) {
-    return this.conceptsService.deleteConcept(conceptId);
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.conceptsService.deleteConcept(id);
   }
 
-  @Put(':conceptId')
+  @Put(':id')
   async update(
-    @Param('conceptId') conceptId: string,
+    @Param('id') id: string,
     @Body() updateConceptDto: CreateConceptDto,
   ) {
-    return this.conceptsService.updateConcept(conceptId, updateConceptDto);
+    return this.conceptsService.updateConcept(id, updateConceptDto);
   }
 
-  @Patch(':conceptId/publish')
-  async publishConcept(@Param('conceptId') conceptId: string) {
-    return this.conceptsService.publishConcept(conceptId);
+  @Patch(':id/publish')
+  async publishConcept(@Param('id') id: string) {
+    return this.conceptsService.publishConcept(id);
   }
   @Get()
   async getAllConcepts(@Query() paginationDto: PaginationDto) {
