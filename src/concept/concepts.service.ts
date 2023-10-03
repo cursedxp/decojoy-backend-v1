@@ -104,6 +104,9 @@ export class ConceptsService {
     return this.prismaService.concept.findMany({
       take: paginationDto.limit,
       skip: skip,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
@@ -115,6 +118,9 @@ export class ConceptsService {
       },
       take: paginationDto.limit,
       skip: skip,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
