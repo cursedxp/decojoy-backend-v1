@@ -41,7 +41,7 @@ model Concept {
   type Type
   createdByAuth0Id String
   createdBy User? @relation("CreatedConcepts", fields: [createdByAuth0Id], references: [auth0Id])
-  purchasedByAuth0Id String
+  purchasedByAuth0Id String?
   purchasedBy User? @relation("PurchasedConcepts", fields: [purchasedByAuth0Id], references: [auth0Id])
   status Status @default(DRAFT)
   createdAt DateTime @default(now())
