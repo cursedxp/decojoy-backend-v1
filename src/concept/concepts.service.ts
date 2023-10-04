@@ -100,6 +100,25 @@ export class ConceptsService {
     }
   }
 
+  async unPublishConcept(id: string) {
+    try {
+      const concept = await this.prismaService.concept.findUnique({
+        where: { id: id },
+      });
+
+      if (!concept) {
+        throw new NotFoundException(`Concept with ID ${id} not found`);
+      }
+
+      return this.prismaService.concept.update({
+        where: { id: id },
+        data: { status: 'DRAFT' },
+      });
+    } catch (error) {
+      this.handlePrismaError(error);
+    }
+  }
+
   async getAllConcepts(paginationDto: PaginationDto) {
     const skip = (paginationDto.page - 1) * paginationDto.limit;
     return this.prismaService.concept.findMany({

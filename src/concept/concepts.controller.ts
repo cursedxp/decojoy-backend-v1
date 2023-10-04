@@ -49,6 +49,11 @@ export class ConceptsController {
   async publishConcept(@Param('id') id: string) {
     return this.conceptsService.publishConcept(id);
   }
+
+  @Patch(':id/unpublish')
+  async unPublishConcept(@Param('id') id: string) {
+    return this.conceptsService.unPublishConcept(id);
+  }
   @Get()
   async getAllConcepts(@Query() paginationDto: PaginationDto) {
     return this.conceptsService.getAllConcepts(paginationDto);
