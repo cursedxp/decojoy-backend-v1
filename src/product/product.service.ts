@@ -92,6 +92,9 @@ export class ProductService {
     return this.prismaService.product.findMany({
       take: paginationDto.limit,
       skip: skip,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

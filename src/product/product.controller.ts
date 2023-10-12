@@ -30,6 +30,10 @@ export class ProductController {
     const payload = request['user'];
     return this.productService.createProduct(createProductDto, payload);
   }
+  @Get()
+  async getProducts(@Query() paginationDto: PaginationDto) {
+    return this.productService.getAllProducts(paginationDto);
+  }
 
   @Delete(':productId')
   async delete(@Param('productId') productId: string) {
@@ -42,9 +46,5 @@ export class ProductController {
     @Body() updateConceptDto: CreateProductDto,
   ) {
     return this.productService.updateProduct(productId, updateConceptDto);
-  }
-  @Get()
-  async getProducts(@Query() paginationDto: PaginationDto) {
-    return this.productService.getAllProducts(paginationDto);
   }
 }
