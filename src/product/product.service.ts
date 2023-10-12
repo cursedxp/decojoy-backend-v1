@@ -16,13 +16,26 @@ export class ProductService {
     private readonly prismaService: PrismaService,
     private readonly paginationService: PaginationService,
   ) {}
-  async createProduct(data: CreateProductDto) {
+  async createProduct(data: CreateProductDto, payload) {
     try {
-      return await this.prismaService.product.create({
+      // Find user by their auth0Id
+      const user = await this.prismaService.user.findUnique({
+        where: { auth0Id: payload.sub },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      const newProduct = await this.prismaService.product.create({
         data: {
           ...data,
         },
       });
+
+      return {
+        message: 'Product has been created',
+        newProduct: newProduct.title,
+      };
     } catch (error) {
       this.handlePrismaError(error);
     }

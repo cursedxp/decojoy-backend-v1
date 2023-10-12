@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Request,
   Param,
   Delete,
   Put,
@@ -12,14 +13,22 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto';
 import { PaginationDto } from 'src/pagination/dto';
-
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 @Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
-  @Post('create')
-  async create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.createProduct(createProductDto);
+  @Post()
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @Request() request: Request,
+  ) {
+    const payload = request['user'];
+    return this.productService.createProduct(createProductDto, payload);
   }
 
   @Delete(':productId')
