@@ -5,6 +5,7 @@ import {
   UploadedFiles,
   InternalServerErrorException,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { ImageStorageService } from './imageStorage.service';
 import { ConfigService } from '@nestjs/config';
@@ -25,7 +26,7 @@ export class ImageStorageController {
   @UseInterceptors(FilesInterceptor('images'))
   async uploadImage(
     @UploadedFiles() images: Express.Multer.File[],
-    folderName: string,
+    @Body('folderName') folderName: string,
   ) {
     const imageUrls = [];
 
