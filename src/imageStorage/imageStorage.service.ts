@@ -33,12 +33,13 @@ export class ImageStorageService {
   async uploadImage(
     file: Express.Multer.File,
     bucketName: string,
+    folderName: string,
   ): Promise<string> {
     const uniqueID = uuidv4(); // Generate a UUID
     const extension = file.originalname.split('.').pop(); // Extract file extension from the original name
     const sanitizedFilename = `${uniqueID}.${extension}`; // Construct a new unique file name
-
-    const blob = this.storage.bucket(bucketName).file(sanitizedFilename);
+    const sanitizedFolderName = `${folderName}/${sanitizedFilename}`; // Construct a new unique file name
+    const blob = this.storage.bucket(bucketName).file(sanitizedFolderName);
 
     const blobStream = blob.createWriteStream({
       resumable: false,
@@ -61,9 +62,10 @@ export class ImageStorageService {
   async uploadAndCreateMetadata(
     file: Express.Multer.File,
     bucketName: string,
+    folderName: string,
   ): Promise<string> {
     // First, upload the image
-    const publicUrl = await this.uploadImage(file, bucketName);
+    const publicUrl = await this.uploadImage(file, bucketName, folderName);
 
     // Now, create metadata for this image using the sanitized filename
     await this.createImageMetadata(file.originalname, publicUrl);

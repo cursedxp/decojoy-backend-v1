@@ -23,7 +23,10 @@ export class ImageStorageController {
 
   @Post('upload')
   @UseInterceptors(FilesInterceptor('images'))
-  async uploadImage(@UploadedFiles() images: Express.Multer.File[]) {
+  async uploadImage(
+    @UploadedFiles() images: Express.Multer.File[],
+    folderName: string,
+  ) {
     const imageUrls = [];
 
     try {
@@ -31,6 +34,7 @@ export class ImageStorageController {
         const url = await this.imageService.uploadAndCreateMetadata(
           image,
           this.config.get('BUCKET_NAME'),
+          folderName,
         );
         imageUrls.push(url);
       }
