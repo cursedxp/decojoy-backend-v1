@@ -21,6 +21,10 @@ export class CreateAndAddProductToConceptDto {
 
   @IsNotEmpty()
   @IsString()
+  thumbnail: string;
+
+  @IsNotEmpty()
+  @IsString()
   description: string;
 
   @IsNotEmpty()

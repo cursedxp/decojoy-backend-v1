@@ -20,6 +20,7 @@ export class ConceptProductsService {
         data: {
           title: data.title,
           image: data.image,
+          thumbnail: data.thumbnail,
           description: data.description,
           category: data.category,
           price: data.price,
