@@ -82,6 +82,7 @@ model Product {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   image String
+  thumbnail String
   description String
   category String
   price Float?
