@@ -58,4 +58,9 @@ export class ConceptsController {
   async getAllConcepts(@Query() paginationDto: PaginationDto) {
     return this.conceptsService.getAllConcepts(paginationDto);
   }
+  @Get(':id')
+  async getConceptById(@Param('id') id: string) {
+    console.log('id', id);
+    return this.conceptsService.getConceptById(id);
+  }
 }

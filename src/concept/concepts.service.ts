@@ -81,6 +81,23 @@ export class ConceptsService {
     }
   }
 
+  async getConceptById(id: string) {
+    console.log('id', id);
+    try {
+      const concept = await this.prismaService.concept.findUnique({
+        where: { id: id },
+      });
+
+      if (!concept) {
+        throw new NotFoundException(`Concept with ID ${id} not found`);
+      }
+
+      return concept;
+    } catch (error) {
+      this.handlePrismaError(error);
+    }
+  }
+
   async publishConcept(id: string) {
     try {
       const concept = await this.prismaService.concept.findUnique({
