@@ -33,7 +33,7 @@ model Image{
 model Concept {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
-  thumbnail String
+  thumbnail String?
   images String[]
   description String
   style  Style
