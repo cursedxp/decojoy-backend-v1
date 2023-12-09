@@ -46,7 +46,7 @@ export class ConceptsController {
   }
 
   @Patch(':id/status')
-  async publishConcept(@Param('id') id: string) {
+  async updateConceptStatus(@Param('id') id: string) {
     return this.conceptsService.togleConceptStatus(id);
   }
   @Get()
