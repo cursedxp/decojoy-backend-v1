@@ -45,7 +45,7 @@ export class ConceptsController {
     return this.conceptsService.updateConcept(id, updateConceptDto);
   }
 
-  @Patch(':id/status')
+  @Patch('/status/:id')
   async updateConceptStatus(@Param('id') id: string) {
     return this.conceptsService.toggleConceptStatus(id);
   }
