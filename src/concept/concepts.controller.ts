@@ -47,7 +47,7 @@ export class ConceptsController {
 
   @Patch(':id/status')
   async updateConceptStatus(@Param('id') id: string) {
-    return this.conceptsService.togleConceptStatus(id);
+    return this.conceptsService.toggleConceptStatus(id);
   }
   @Get()
   async getAllConcepts(@Query() paginationDto: PaginationDto) {

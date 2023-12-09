@@ -98,7 +98,7 @@ export class ConceptsService {
     }
   }
 
-  async togleConceptStatus(id: string) {
+  async toggleConceptStatus(id: string) {
     try {
       const concept = await this.prismaService.concept.findUnique({
         where: { id: id },
