@@ -98,7 +98,7 @@ export class ConceptsService {
     }
   }
 
-  async publishConcept(id: string) {
+  async togleConceptStatus(id: string) {
     try {
       const concept = await this.prismaService.concept.findUnique({
         where: { id: id },
@@ -108,28 +108,11 @@ export class ConceptsService {
         throw new NotFoundException(`Concept with ID ${id} not found`);
       }
 
-      return this.prismaService.concept.update({
-        where: { id: id },
-        data: { status: 'PUBLISHED' },
-      });
-    } catch (error) {
-      this.handlePrismaError(error);
-    }
-  }
-
-  async unPublishConcept(id: string) {
-    try {
-      const concept = await this.prismaService.concept.findUnique({
-        where: { id: id },
-      });
-
-      if (!concept) {
-        throw new NotFoundException(`Concept with ID ${id} not found`);
-      }
+      const status = concept.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
 
       return this.prismaService.concept.update({
         where: { id: id },
-        data: { status: 'DRAFT' },
+        data: { status: status },
       });
     } catch (error) {
       this.handlePrismaError(error);
